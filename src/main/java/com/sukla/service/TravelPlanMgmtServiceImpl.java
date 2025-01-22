@@ -8,6 +8,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.sukla.config.AppConfigProperties;
+import com.sukla.constants.TravelPlanConstants;
 import com.sukla.entity.PlanCategory;
 import com.sukla.entity.TravelPlan;
 import com.sukla.repository.IPlanCategoryRepository;
@@ -21,6 +23,16 @@ public class TravelPlanMgmtServiceImpl implements ITravelPlanMgmtService
 	
 	@Autowired
 	private IPlanCategoryRepository planCategoryRepo;
+	
+	private Map<String, String> messages;
+	
+	@Autowired
+	public TravelPlanMgmtServiceImpl(AppConfigProperties props)
+	{
+		System.out.println(props);
+		messages=props.getMessages();
+		System.out.println("messages::"+messages);
+	}
 
 	@Override
 	public String registerTravelPlan(TravelPlan plan)
@@ -38,7 +50,7 @@ public class TravelPlanMgmtServiceImpl implements ITravelPlanMgmtService
 			return "Problem in saving the Travel Plan";
 		}*/
 		
-		return saved.getPlanId()!=null?"Travel plan is saved with id value::"+saved.getPlanId():"Problem in saving tour plan";
+		return saved.getPlanId()!=null?messages.get(TravelPlanConstants.SAVE_SUCCESS)+saved.getPlanId():messages.get(TravelPlanConstants.SAVE_FAILURE);
 		
 	}
 
@@ -69,7 +81,7 @@ public class TravelPlanMgmtServiceImpl implements ITravelPlanMgmtService
 	public TravelPlan showTravelPlanById(Integer planId)
 	{
 		
-		return travelPlanRepo.findById(planId).orElseThrow(()->new IllegalArgumentException("Travel Plan is not found"));
+		return travelPlanRepo.findById(planId).orElseThrow(()->new IllegalArgumentException(messages.get(TravelPlanConstants.FIND_BY_ID_FAILURE)));
 		/*
 		Optional<TravelPlan> opt = travelPlanRepo.findById(planId);
 		
@@ -93,11 +105,11 @@ public class TravelPlanMgmtServiceImpl implements ITravelPlanMgmtService
 		{
 			//update the record 
 			travelPlanRepo.save(plan);
-			return plan.getPlanId()+"Travel  is updated";
+			return plan.getPlanId()+messages.get(TravelPlanConstants.UPDATE_SUCCESS);
 		}
 		else
 		{
-			return plan.getPlanId()+"Travel Plan is not found";
+			return plan.getPlanId()+messages.get(TravelPlanConstants.UPDATE_FAILURE);
 		}
 		
 		//update the update
@@ -115,11 +127,11 @@ public class TravelPlanMgmtServiceImpl implements ITravelPlanMgmtService
 		if(opt.isPresent())
 		{
 			travelPlanRepo.deleteById(planId);
-			return planId+"Travel Plan is deleted";
+			return planId+messages.get(TravelPlanConstants.DELETE_SUCCESS);
 		}
 		else
 		{
-			return planId+"Travel Plan is not found";
+			return planId+messages.get(TravelPlanConstants.DELETE_FAILURE);
 		}
 	}
 
@@ -133,11 +145,11 @@ public class TravelPlanMgmtServiceImpl implements ITravelPlanMgmtService
 			TravelPlan plan = opt.get();
 			plan.setActiveSW(status);
 			travelPlanRepo.save(plan);
-			return planId+"Travel plan status is changed";
+			return planId+messages.get(TravelPlanConstants.STATUS_CHANGE_SUCCESS);
 		}
 		else
 		{
-			return planId+"Travel Plan is not found for updation";
+			return planId+messages.get(TravelPlanConstants.STATUS_CHANGE_FAILURE);
 		}
 	}
 
