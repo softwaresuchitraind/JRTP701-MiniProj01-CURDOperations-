@@ -18,13 +18,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sukla.entity.TravelPlan;
 import com.sukla.service.ITravelPlanMgmtService;
 
+
+//http://localhost:4041/swagger-ui/index.html
 @RestController
 @RequestMapping("/travel/api")//Global Path(Completely optional)
 public class TravelPlanOperationsController
 {
 	@Autowired
 	private ITravelPlanMgmtService planService;
-	
 	
 	@GetMapping("/categories")
 	public ResponseEntity<?> showTravelPlanCategories()
